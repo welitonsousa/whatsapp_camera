@@ -1,5 +1,5 @@
 name: whatsapp_camera
-description: This project is for you to be able to make validations and formatting in a simple and easy way in your projects
+description: This is a package to open a camera along with a photo gallery, to simplify the steps of the end user
 version: 1.0.0
 homepage: https://github.com/welitonsousa/whatsapp_camera
 repository: https://github.com/welitonsousa/whatsapp_camera
