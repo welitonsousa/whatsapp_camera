@@ -5,7 +5,14 @@ import 'package:photo_view/photo_view.dart';
 enum ImageType { file, network, asset }
 
 class ViewImage extends StatefulWidget {
+  ///
+  /// image path: network url, file path or asset
+  ///
   final String image;
+
+  ///
+  /// define the image type
+  ///
   final ImageType imageType;
   const ViewImage({
     super.key,
