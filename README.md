@@ -1,9 +1,9 @@
 # whatsapp_camera
 <p>
-esse é um pacote para abrir uma camera juntamente com uma galeria de fotos, para simplificar os passos do usuário final
+This is a package to open a camera along with a photo gallery, to simplify the steps of the end user
 </p>
 <p>
-Também conta com um widget para visualizar imagens
+It also has a widget for viewing images
 </p>
 
 ### how to use
