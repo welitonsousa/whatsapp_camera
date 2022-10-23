@@ -11,8 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
   camera_camera: 2.0.2
-  # image_picker: 0.8.6
   file_picker: 5.2.2
+  flutter_sliding_up_panel: 2.0.1
+  photo_gallery: 1.1.1
+  # image_gallery: 1.2.0
+  # all_gallery_images: 0.1.0+1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -2,7 +2,10 @@
 
 ### android
 ```plist
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 minSdkVersion 21
+compileSdkVersion 33
 ```
 ### ios
 ```plist
