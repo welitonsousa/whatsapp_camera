@@ -1,4 +1,10 @@
 # whatsapp_camera
+<p>
+esse é um pacote para abrir uma camera juntamente com uma galeria de fotos, para simplificar os passos do usuário final
+</p>
+<p>
+Também conta com um widget para visualizar imagens
+</p>
 
 ### how to use
 
@@ -24,7 +30,7 @@ Navigator.push(
 );
 ```
 <p align="center">
-<img  src="https://raw.githubusercontent.com/welitonsousa/whatsapp_camera/main/assets/example.gif" width="250" height="500"/>
+<img  src="https://github.com/welitonsousa/whatsapp_camera/blob/main/assets/example.gif?raw=true" width="250" height="500"/>
 </p>
 
 <hr>
