@@ -1,7 +1,4 @@
 library whatsapp_camera;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'camera/camera_whatsapp.dart';
+export 'camera/view_image.dart';
