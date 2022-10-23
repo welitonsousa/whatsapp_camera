@@ -27,9 +27,6 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
   @override
   void initState() {
     controller.inicialize();
-    controller.addListener(() {
-      setState(() {});
-    });
     super.initState();
   }
 
@@ -74,43 +71,48 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
               onVerticalDragStart: (details) => painel.expand(),
               child: SizedBox(
                 height: 120,
-                child: Column(
-                  children: [
-                    if (controller.images.isNotEmpty)
-                      const RotatedBox(
-                        quarterTurns: 1,
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                        ),
-                      ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: controller.images.length,
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            height: 100,
-                            width: 100,
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                fit: BoxFit.cover,
-                                isAntiAlias: true,
-                                filterQuality: FilterQuality.high,
-                                image: ThumbnailProvider(
-                                  highQuality: true,
-                                  mediumId: controller.images[index].id,
-                                ),
+                child: AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, child) {
+                      return Column(
+                        children: [
+                          if (controller.images.isNotEmpty)
+                            const RotatedBox(
+                              quarterTurns: 1,
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.white,
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: controller.images.length,
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  height: 100,
+                                  width: 100,
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      isAntiAlias: true,
+                                      filterQuality: FilterQuality.high,
+                                      image: ThumbnailProvider(
+                                        highQuality: true,
+                                        mediumId: controller.images[index].id,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
               ),
             ),
           ),
@@ -118,10 +120,14 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
             child: SlidingUpPanelWidget(
               controlHeight: 0,
               panelController: painel,
-              child: ImagesPage(
-                controller: controller,
-                close: painel.hide,
-              ),
+              child: AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, child) {
+                    return ImagesPage(
+                      controller: controller,
+                      close: painel.hide,
+                    );
+                  }),
             ),
           )
         ],

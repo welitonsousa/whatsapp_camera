@@ -9,6 +9,12 @@ class WhatsAppCameraController extends ChangeNotifier {
   final selectedImages = <File>[];
   var images = <Medium>[];
 
+  bool imageIsSelected(String? fileName) {
+    final index =
+        selectedImages.indexWhere((e) => e.path.split('/').last == fileName);
+    return index != -1;
+  }
+
   Future<void> inicialize() async {
     final albums = await PhotoGallery.listAlbums(mediumType: MediumType.image);
     final res = await Future.wait(albums.map((e) => e.listMedia()));
@@ -35,4 +41,16 @@ class WhatsAppCameraController extends ChangeNotifier {
   }
 
   void captureImage(File file) {}
+
+  Future<void> selectImage(Medium image) async {
+    final index = selectedImages
+        .indexWhere((e) => e.path.split('/').last == image.filename);
+    if (index != -1) {
+      selectedImages.removeAt(index);
+    } else {
+      final file = await image.getFile();
+      selectedImages.add(file);
+    }
+    notifyListeners();
+  }
 }

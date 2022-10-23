@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:whatsapp_camera/camera/camera_whatsapp_controller.dart';
+import 'package:whatsapp_camera/camera/view_image.dart';
 
 class ImagesPage extends StatefulWidget {
   final WhatsAppCameraController controller;
@@ -34,7 +35,7 @@ class _ImagesPageState extends State<ImagesPage> {
                   onPressed: widget.close?.call,
                   icon: const Icon(Icons.close),
                 ),
-                Text(widget.controller.images.length.toString()),
+                Text(widget.controller.selectedImages.length.toString()),
                 IconButton(
                   onPressed: () {},
                   icon: const Icon(Icons.check),
@@ -56,8 +57,15 @@ class _ImagesPageState extends State<ImagesPage> {
                     (MediaQuery.of(context).size.height / 4),
               ),
               itemBuilder: (context, index) {
-                return _ImageItem(
-                  image: widget.controller.images[index].id,
+                return InkWell(
+                  onTap: () => widget.controller
+                      .selectImage(widget.controller.images[index]),
+                  child: ImageItem(
+                    selected: widget.controller.imageIsSelected(
+                      widget.controller.images[index].filename,
+                    ),
+                    image: widget.controller.images[index],
+                  ),
                 );
               },
             ),
@@ -68,25 +76,68 @@ class _ImagesPageState extends State<ImagesPage> {
   }
 }
 
-class _ImageItem extends StatelessWidget {
-  final String image;
-  const _ImageItem({required this.image});
+class ImageItem extends StatelessWidget {
+  final Medium image;
+  final bool selected;
+  const ImageItem({super.key, required this.image, this.selected = false});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-          image: ThumbnailProvider(
-            mediumId: image,
-            highQuality: true,
-            height: 150,
-            width: 150,
-            mediumType: MediumType.image,
+    return InkWell(
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                image: ThumbnailProvider(
+                  mediumId: image.id,
+                  highQuality: true,
+                  height: 150,
+                  width: 150,
+                  mediumType: MediumType.image,
+                ),
+              ),
+            ),
           ),
-        ),
+          if (selected)
+            Container(
+              color: Colors.grey.withOpacity(.3),
+              child: Center(
+                child: Stack(
+                  children: [
+                    const Icon(
+                      Icons.done,
+                      size: 52,
+                      color: Colors.white,
+                    ),
+                    Icon(
+                      Icons.done,
+                      size: 50,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              color: Colors.white,
+              icon: const Icon(Icons.zoom_out_map_outlined),
+              onPressed: () async {
+                image.getFile().then((value) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) {
+                      return ViewImage(image: value.path);
+                    },
+                  ));
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
