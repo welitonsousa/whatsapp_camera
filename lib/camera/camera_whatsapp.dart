@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:camera_camera/camera_camera.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:whatsapp_camera/camera/view_image.dart';
@@ -25,23 +27,52 @@ class _WhatsAppCameraController extends ChangeNotifier {
   final selectedImages = <File>[];
   var images = <Medium>[];
 
+  Future<bool> handlerPermissions() async {
+    final status = await Permission.storage.request();
+    if (Platform.isIOS) {
+      await Permission.photos.request();
+      await Permission.mediaLibrary.request();
+    }
+    return status.isGranted;
+  }
+
   bool imageIsSelected(String? fileName) {
     final index =
         selectedImages.indexWhere((e) => e.path.split('/').last == fileName);
     return index != -1;
   }
 
-  Future<void> inicialize() async {
-    final albums = await PhotoGallery.listAlbums(mediumType: MediumType.image);
-    final res = await Future.wait(albums.map((e) => e.listMedia()));
-    final index = res.indexWhere((e) => e.album.name == 'All');
-    if (index != -1) images.addAll(res[index].items);
-    if (index == -1) {
-      for (var e in res) {
-        images.addAll(e.items);
+  _timer() {
+    Timer.periodic(const Duration(seconds: 2), (t) async {
+      Permission.camera.isGranted.then((value) {
+        if (value) {
+          getPhotosToGallery();
+          t.cancel();
+        }
+      });
+    });
+  }
+
+  Future<void> getPhotosToGallery() async {
+    final permission = await handlerPermissions();
+    if (permission) {
+      final albums = await PhotoGallery.listAlbums(
+        mediumType: MediumType.image,
+      );
+      final res = await Future.wait(albums.map((e) => e.listMedia()));
+      final index = res.indexWhere((e) => e.album.name == 'All');
+      if (index != -1) images.addAll(res[index].items);
+      if (index == -1) {
+        for (var e in res) {
+          images.addAll(e.items);
+        }
       }
+      notifyListeners();
     }
-    notifyListeners();
+  }
+
+  Future<void> inicialize() async {
+    _timer();
   }
 
   Future<void> openGallery() async {
@@ -134,14 +165,16 @@ class _WhatsappCameraState extends State<WhatsappCamera>
 
   @override
   void initState() {
+    super.initState();
     controller = _WhatsAppCameraController(multiple: widget.multiple);
-    controller.inicialize();
     painel.addListener(() {
       if (painel.status.name == 'hidden') {
         controller.selectedImages.clear();
       }
     });
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.inicialize();
+    });
   }
 
   @override
@@ -175,7 +208,9 @@ class _WhatsappCameraState extends State<WhatsappCamera>
                   color: Colors.white,
                   onPressed: () async {
                     controller.openGallery().then((value) {
-                      Navigator.pop(context, controller.selectedImages);
+                      if (controller.selectedImages.isNotEmpty) {
+                        Navigator.pop(context, controller.selectedImages);
+                      }
                     });
                   },
                   icon: const Icon(Icons.image),
