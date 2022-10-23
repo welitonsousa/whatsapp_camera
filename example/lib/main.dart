@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:whatsapp_camera/camera/camera.dart';
+import 'package:whatsapp_camera/whatsapp_camera.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,9 +28,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    files.addListener(() {
-      setState(() {});
-    });
+    files.addListener(() => setState(() {}));
     super.initState();
   }
 
@@ -47,8 +45,12 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.camera),
         onPressed: () async {
-          List<File>? res = await Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const WhatsappCamera()));
+          List<File>? res = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const WhatsappCamera(),
+            ),
+          );
           if (res != null) files.value = res;
         },
       ),
