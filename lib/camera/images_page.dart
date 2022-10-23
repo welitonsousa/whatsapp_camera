@@ -6,7 +6,13 @@ import 'package:whatsapp_camera/camera/view_image.dart';
 class ImagesPage extends StatefulWidget {
   final WhatsAppCameraController controller;
   final void Function()? close;
-  const ImagesPage({super.key, required this.controller, this.close});
+  final void Function()? done;
+  const ImagesPage({
+    super.key,
+    required this.controller,
+    this.close,
+    this.done,
+  });
 
   @override
   State<ImagesPage> createState() => _ImagesPageState();
@@ -35,9 +41,10 @@ class _ImagesPageState extends State<ImagesPage> {
                   onPressed: widget.close?.call,
                   icon: const Icon(Icons.close),
                 ),
-                Text(widget.controller.selectedImages.length.toString()),
+                if (widget.controller.multiple)
+                  Text(widget.controller.selectedImages.length.toString()),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: widget.done?.call,
                   icon: const Icon(Icons.check),
                 )
               ],
@@ -86,17 +93,20 @@ class ImageItem extends StatelessWidget {
     return InkWell(
       child: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-                image: ThumbnailProvider(
-                  mediumId: image.id,
-                  highQuality: true,
-                  height: 150,
-                  width: 150,
-                  mediumType: MediumType.image,
+          Hero(
+            tag: image.id,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  image: ThumbnailProvider(
+                    mediumId: image.id,
+                    highQuality: true,
+                    height: 150,
+                    width: 150,
+                    mediumType: MediumType.image,
+                  ),
                 ),
               ),
             ),
@@ -130,7 +140,10 @@ class ImageItem extends StatelessWidget {
                 image.getFile().then((value) {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) {
-                      return ViewImage(image: value.path);
+                      return Hero(
+                        tag: image.id,
+                        child: ViewImage(image: value.path),
+                      );
                     },
                   ));
                 });

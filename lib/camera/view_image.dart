@@ -18,53 +18,18 @@ class ViewImage extends StatefulWidget {
 }
 
 class _ViewImageState extends State<ViewImage> {
-  final opacity = ValueNotifier(1.0);
-
-  @override
-  void dispose() {
-    opacity.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            Dismissible(
-              key: Key(widget.image),
-              direction: DismissDirection.vertical,
-              confirmDismiss: (direction) async {
-                Navigator.pop(context);
-                return true;
-              },
-              onUpdate: (v) {
-                double value = 1 - (v.progress * 2);
-                if (value < 0) value = 0;
-                opacity.value = value;
-              },
-              child: AnimatedBuilder(
-                animation: opacity,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: opacity.value,
-                    child: Hero(
-                      tag: widget.image,
-                      child: PhotoView(
-                        imageProvider: imageProvider,
-                        maxScale: 3.0,
-                        minScale: MediaQuery.of(context).size.aspectRatio,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const CloseButton(color: Colors.white),
-          ],
-        ),
+        elevation: 0,
+      ),
+      backgroundColor: Colors.black,
+      body: PhotoView(
+        enablePanAlways: true,
+        imageProvider: imageProvider,
+        maxScale: 3.0,
       ),
     );
   }

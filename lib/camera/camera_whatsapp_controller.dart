@@ -40,14 +40,22 @@ class WhatsAppCameraController extends ChangeNotifier {
     }
   }
 
-  void captureImage(File file) {}
+  void captureImage(File file) {
+    selectedImages.add(file);
+  }
 
   Future<void> selectImage(Medium image) async {
-    final index = selectedImages
-        .indexWhere((e) => e.path.split('/').last == image.filename);
-    if (index != -1) {
-      selectedImages.removeAt(index);
+    if (multiple) {
+      final index = selectedImages
+          .indexWhere((e) => e.path.split('/').last == image.filename);
+      if (index != -1) {
+        selectedImages.removeAt(index);
+      } else {
+        final file = await image.getFile();
+        selectedImages.add(file);
+      }
     } else {
+      selectedImages.clear();
       final file = await image.getFile();
       selectedImages.add(file);
     }

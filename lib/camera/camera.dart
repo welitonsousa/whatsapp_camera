@@ -1,4 +1,3 @@
-import 'package:camera_camera/camera_camera.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
@@ -7,14 +6,15 @@ import 'package:whatsapp_camera/camera/camera_whatsapp_controller.dart';
 import 'package:whatsapp_camera/camera/images_page.dart';
 
 class WhatsappCamera extends StatefulWidget {
-  const WhatsappCamera({super.key});
+  final bool multiple;
+  const WhatsappCamera({super.key, this.multiple = true});
 
   @override
   State<WhatsappCamera> createState() => _WhatsappCameraState();
 }
 
 class _WhatsappCameraState extends State<WhatsappCamera> {
-  final controller = WhatsAppCameraController();
+  late WhatsAppCameraController controller;
   final painel = SlidingUpPanelController();
 
   @override
@@ -26,7 +26,13 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
 
   @override
   void initState() {
+    controller = WhatsAppCameraController(multiple: widget.multiple);
     controller.inicialize();
+    painel.addListener(() {
+      if (painel.status.name == 'hidden') {
+        controller.selectedImages.clear();
+      }
+    });
     super.initState();
   }
 
@@ -38,11 +44,14 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            child: CameraCamera(
-              enableZoom: false,
-              resolutionPreset: ResolutionPreset.high,
-              onFile: controller.captureImage,
-            ),
+            // child: CameraCamera(
+            //   enableZoom: false,
+            //   resolutionPreset: ResolutionPreset.high,
+            //   onFile: (file) {
+            //     controller.captureImage(file);
+            //     Navigator.pop(context, controller.selectedImages);
+            //   },
+            // ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 30),
@@ -56,7 +65,11 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
                 ),
                 IconButton(
                   color: Colors.white,
-                  onPressed: controller.openGallery,
+                  onPressed: () async {
+                    controller.openGallery().then((value) {
+                      Navigator.pop(context, controller.selectedImages);
+                    });
+                  },
                   icon: const Icon(Icons.image),
                 ),
               ],
@@ -90,19 +103,31 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
                               physics: const BouncingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
-                                return Container(
-                                  height: 100,
-                                  width: 100,
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      isAntiAlias: true,
-                                      filterQuality: FilterQuality.high,
-                                      image: ThumbnailProvider(
-                                        highQuality: true,
-                                        mediumId: controller.images[index].id,
+                                return InkWell(
+                                  onTap: () async {
+                                    controller
+                                        .selectImage(controller.images[index])
+                                        .then((value) {
+                                      Navigator.pop(
+                                        context,
+                                        controller.selectedImages,
+                                      );
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 100,
+                                    width: 100,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        isAntiAlias: true,
+                                        filterQuality: FilterQuality.high,
+                                        image: ThumbnailProvider(
+                                          highQuality: true,
+                                          mediumId: controller.images[index].id,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -125,7 +150,16 @@ class _WhatsappCameraState extends State<WhatsappCamera> {
                   builder: (context, child) {
                     return ImagesPage(
                       controller: controller,
-                      close: painel.hide,
+                      close: () {
+                        painel.hide();
+                      },
+                      done: () {
+                        if (controller.selectedImages.isNotEmpty) {
+                          Navigator.pop(context, controller.selectedImages);
+                        } else {
+                          painel.hide();
+                        }
+                      },
                     );
                   }),
             ),

@@ -6,6 +6,7 @@
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 minSdkVersion 21
 compileSdkVersion 33
+android:requestLegacyExternalStorage="true"
 ```
 ### ios
 ```plist
