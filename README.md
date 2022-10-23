@@ -2,7 +2,7 @@
 
 ### how to use
 
-Open camera: <br>
+Open camera:
 ```dart
 List<File>? res = await Navigator.push(
   context, MaterialPageRoute(
@@ -10,7 +10,9 @@ List<File>? res = await Navigator.push(
   ),
 );
 ```
-Open image: <br>
+<br>
+
+Open image: 
 ```dart
 Navigator.push(
   context, MaterialPageRoute(
@@ -23,12 +25,6 @@ Navigator.push(
 ```
 <p align="center">
 <img  src="https://raw.githubusercontent.com/welitonsousa/whatsapp_camera/main/assets/example.gif" width="250" height="500"/>
-</p>
-
-<p align="center">
-<video autoplay muted width="250" height="500" controls>
-  <source  src="https://raw.githubusercontent.com/welitonsousa/whatsapp_camera/main/assets/example.mp4" type="video/mp4">
-</video>
 </p>
 
 <hr>
